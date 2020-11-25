@@ -1,5 +1,6 @@
 from numpy import pi, sin, cos, tan, arccos, sign
 from datetime import datetime, timedelta
+from pandas import Timestamp
 
 # considerando petrolina
 LAT = (-40.507778)
@@ -13,7 +14,7 @@ def solartime(stdtime, Lloc = LAT, Lstd = STD_LAT):
     Lloc = longitude local/geográfica em graus
     Lstd = longitude padrão/de fuso horário em graus
     """
-    if type(stdtime) != datetime:
+    if type(stdtime) not in (datetime, Timestamp):
         raise TypeError()
 
     n = (stdtime - datetime(stdtime.year, 1, 1)).days
@@ -31,12 +32,14 @@ def angHora(stdtime, lat = LAT):
     stdtime = momento como timestamp
     """
     if not -90 <= lat <= 90:
-        raise ValueError()
+        raise ValueError(lat)
+    if type(stdtime) not in (datetime, Timestamp):
+        raise TypeError(type(stdtime))
 
     n = (stdtime - datetime(stdtime.year, 1, 1)).days + 1
 
     nHora = ws(n, lat) / 15
-    meioDia = datetime(stdtime.year, stdtime.month, stdtime.day, 12, 00)
+    meioDia = datetime(stdtime.year, stdtime.month, stdtime.day, 12, 0)
     meioDiaSolar = solartime(meioDia)
     horaPassada = (stdtime - meioDiaSolar).seconds / 3600
 
@@ -49,8 +52,8 @@ def declin(n):
     retorna a declinação solar em graus
     n = dia juliano
     """
-    if not 0 < n <= 365:
-        raise ValueError()
+    if not 0 < n <= 366:
+        raise ValueError(n)
 
     return 23.45 * sin(2 * pi * (284 + n) / 365)
 
@@ -62,10 +65,10 @@ def ws(n, lat = LAT):
     n = dia juliano
     lat = latitude em graus
     """
-    if not 0 < n <= 365:
-        raise ValueError()
+    if not 0 < n <= 366:
+        raise ValueError(n)
     if not -90 <= lat <= 90:
-        raise ValueError()
+        raise ValueError(lat)
 
     dec = declin(n) * (pi / 180)
     lat = lat * (pi / 180)
@@ -81,7 +84,9 @@ def azimute(stdtime, lat = LAT):
     lat = latitude em graus
     """
     if not -90 <= lat <= 90:
-        raise ValueError()
+        raise ValueError(lat)
+    if type(stdtime) not in (datetime, Timestamp):
+        raise TypeError(type(stdtime))
 
     n = (stdtime - datetime(stdtime.year, 1, 1)).days + 1
 
@@ -101,7 +106,9 @@ def cos_theta(stdtime, lat = LAT, beta = 0):
     beta = inclinação em graus
     """
     if not -90 <= lat <= 90:
-        raise ValueError()
+        raise ValueError(lat)
+    if type(stdtime) not in (datetime, Timestamp):
+        raise TypeError(type(stdtime))
 
     n = (stdtime - datetime(stdtime.year, 1, 1)).days + 1
     w = angHora(stdtime, lat)
