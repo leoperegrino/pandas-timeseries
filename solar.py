@@ -2,6 +2,7 @@ from numpy import pi, sin, cos, tan, arccos, sign
 from datetime import datetime, timedelta
 from pandas import Timestamp
 
+# valor padrão,
 # considerando petrolina
 LAT = (-40.507778)
 STD_LAT = (-45)
@@ -10,12 +11,14 @@ STD_LAT = (-45)
 def solartime(stdtime, Lloc = LAT, Lstd = STD_LAT):
     """
     retorna o horário solar como datetime
-    stdtime = hora de relógio
-    Lloc = longitude local/geográfica em graus
-    Lstd = longitude padrão/de fuso horário em graus
+    ---
+    stdtime: hora de relógio
+    Lloc: longitude local/geográfica em graus
+    Lstd: longitude padrão/de fuso horário em graus
     """
+
     if type(stdtime) not in (datetime, Timestamp):
-        raise TypeError()
+        raise TypeError(type(stdtime))
 
     n = (stdtime - datetime(stdtime.year, 1, 1)).days
     B = (n - 1) * (2 * pi / 365)
@@ -24,15 +27,17 @@ def solartime(stdtime, Lloc = LAT, Lstd = STD_LAT):
     return stdtime + timedelta(minutes = 4 * (Lstd - Lloc) + E)
 
 
-
 def angHora(stdtime, lat = LAT):
     """
     retorna o ângulo horário em graus no momento
-    lat = latitude em graus
-    stdtime = momento como timestamp
+    ---
+    lat: latitude em graus
+    stdtime: momento como timestamp
     """
+
     if not -90 <= lat <= 90:
         raise ValueError(lat)
+
     if type(stdtime) not in (datetime, Timestamp):
         raise TypeError(type(stdtime))
 
@@ -46,27 +51,30 @@ def angHora(stdtime, lat = LAT):
     return  ws(n, lat) * (horaPassada / nHora)
 
 
-
 def declin(n):
     """
     retorna a declinação solar em graus
-    n = dia juliano
+    ---
+    n: dia juliano
     """
+
     if not 0 < n <= 366:
         raise ValueError(n)
 
     return 23.45 * sin(2 * pi * (284 + n) / 365)
 
 
-
 def ws(n, lat = LAT):
     """
     retorna o ângulo horário poente em graus
-    n = dia juliano
-    lat = latitude em graus
+    ---
+    n: dia juliano
+    lat: latitude em graus
     """
+
     if not 0 < n <= 366:
         raise ValueError(n)
+
     if not -90 <= lat <= 90:
         raise ValueError(lat)
 
@@ -76,15 +84,17 @@ def ws(n, lat = LAT):
     return arccos( -tan(lat) * tan(dec) ) * (180 / pi)
 
 
-
 def azimute(stdtime, lat = LAT):
     """
     retorna o azimute solar em graus
-    stdtime = momento como timestamp
-    lat = latitude em graus
+    ---
+    stdtime: momento como timestamp
+    lat: latitude em graus
     """
+
     if not -90 <= lat <= 90:
         raise ValueError(lat)
+
     if type(stdtime) not in (datetime, Timestamp):
         raise TypeError(type(stdtime))
 
@@ -97,16 +107,18 @@ def azimute(stdtime, lat = LAT):
     return sign(w) * abs(arccos((cos(thetaz) * sin(lat) - sin(dec))/sin(thetaz) * cos(lat))) * (180 / pi)
 
 
-
 def cos_theta(stdtime, lat = LAT, beta = 0):
     """
     retorna o coseno de theta
-    stdtime = momento como timestamp
-    lat = latitude em graus
-    beta = inclinação em graus
+    ---
+    stdtime: momento como timestamp
+    lat: latitude em graus
+    beta: inclinação em graus
     """
+
     if not -90 <= lat <= 90:
         raise ValueError(lat)
+
     if type(stdtime) not in (datetime, Timestamp):
         raise TypeError(type(stdtime))
 
